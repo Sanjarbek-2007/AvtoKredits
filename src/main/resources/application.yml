@@ -1,0 +1,41 @@
+spring:
+  application:
+    name: AvtoKredits
+  mail:
+    host: smtp.gmail.com
+    port: 465
+    username: it.hubchik@gmail.com
+    password: pjqi wvtk vpel yfnr
+    properties:
+      mail:
+        smtp:
+          properties:
+            enable: true
+          auth: true
+          starttls:
+            enable: true
+          ssl:
+            enable: true
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/avtokredits
+    username: postgres
+    password: tplink01459520
+    driverClassName: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+
+
+
+
+
+secret:
+  key: ApeVFjUOyTmk7XYwgcYwIEsix1mALAsQhftYQqWHE8P6kcnqbZv0Uxj9HduKEvjXzz0sVYCG0ZjSBtmxadtAiQ==
+
