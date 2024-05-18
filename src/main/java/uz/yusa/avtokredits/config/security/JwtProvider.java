@@ -42,7 +42,7 @@ public class JwtProvider {
         return Jwts.builder()
                 .subject(email)
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + 2400 * 1000))
+                .expiration(new Date(System.currentTimeMillis() + 2400 * 10000))
 //                .claim("roles", roles.toString())
                 .signWith(key())
                 .compact();

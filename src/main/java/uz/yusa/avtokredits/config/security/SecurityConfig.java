@@ -43,7 +43,7 @@ public class SecurityConfig {
                 .csrf(CsrfConfigurer::disable)
                 .cors(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(registr ->
-                        registr.requestMatchers("/auth/**").permitAll()
+                        registr.requestMatchers("/auth/**","/posts/**").permitAll()
                                 .anyRequest().authenticated()
                 ).sessionManagement(config -> config.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);

@@ -41,9 +41,11 @@ public class PostService {
         return postRepository.findById(id).orElse(null);
     }
 
-    public Post savePost(Post post,  MultipartFile[] files) throws NoFileExeption, PostUploadFailedException {
+    public Post savePost(Post post,  List<MultipartFile> files) throws NoFileExeption, PostUploadFailedException {
+//
+//        MultipartFile[] files=  photos.toArray();
 
-        if (files == null || files.length == 0 || Arrays.stream(files).allMatch(MultipartFile::isEmpty)) {
+        if (files == null || files.size() == 0 || files.stream().allMatch(MultipartFile::isEmpty)) {
                 throw new NoFileExeption("No file uploaded");
             }
 

@@ -1,5 +1,6 @@
 package uz.yusa.avtokredits.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import uz.yusa.avtokredits.domain.Application;
+import uz.yusa.avtokredits.domain.post.Car;
+import uz.yusa.avtokredits.domain.post.CreditTarrif;
 import uz.yusa.avtokredits.domain.post.Post;
 import uz.yusa.avtokredits.dto.UploadPostDto;
 import uz.yusa.avtokredits.exeption.NoFileExeption;
@@ -30,27 +33,50 @@ public class PostController {
     public ResponseEntity<List<Post>> getCars() {
         return ResponseEntity.ok(postService.getAllActivePosts());
     }
+/**/
 
 //    @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping("/add")
-    public ResponseEntity<Post> addPost(@RequestBody UploadPostDto request) throws NoFileExeption {
-        Post post = new Post();
-        post.setTitle(request.getPostTitle());
-        post.setContent(request.getCarContent());
-        post.getCar().setBrand(request.getCarBrand());
-        post.getCar().setModel(request.getCarModel());
-        post.getCar().setYear(request.getCarYear());
-        post.getCar().setColor(request.getCarColor());
-        post.getCar().setEngine(request.getCarEngine());
-        post.getCar().setGear(request.getCarGear());
-        post.getCar().setFuelType(request.getCarFuelType());
-        post.getCar().getTarrif().setName(request.getCreditTarifs());
-        post.getCar().getTarrif().setCountMonths(request.getCreditMonthCount());
-        post.getCar().getTarrif().setPrice(request.getAmount());
-        post.getCar().getTarrif().setProcents(request.getProcents());
-        MultipartFile[] carImages = request.getCarImages();
+@PostMapping("/add")
+public ResponseEntity<Post> addPost(
+       @RequestParam("postTitle") String postTitle,
+                                       @RequestParam("carContent") String carContent,
+       @RequestParam("carImages") List<MultipartFile> carImages,
+                                       @RequestParam("carBrand") String carBrand,
+                                       @RequestParam("carModel") String carModel,
+                                       @RequestParam("carYear") String carYear,
+                                       @RequestParam("carColor") String carColor,
+                                       @RequestParam("carEngine") String carEngine,
+                                       @RequestParam("carGear") String carGear,
+                                       @RequestParam("carFuelType") String carFuelType,
+                                       @RequestParam("creditTarifs") String creditTarifs,
+                                       @RequestParam("creditMonthCount") int creditMonthCount,
+                                       @RequestParam("amount") double amount,
+                                       @RequestParam("procents") double procents
+) throws NoFileExeption {
+//
+//    Post post1 = Post.builder().photos(new ArrayList<>()).car(new Car("SDsd", "sdsd", "sdsd", "sdsds", "sdsdds", "AT", "AALS:",
+//            new CreditTarrif("dsdsdssd", 123, 123, 123, 123))).build();
+            Post post1 = Post.builder().title(postTitle).content(carContent).photos(new ArrayList<>()).car(new Car(carBrand,
+                    carModel, carYear, carColor, carEngine, carGear, carFuelType,
+            new CreditTarrif(creditTarifs, amount, creditMonthCount, procents, amount/100*procents))).build();
+
+
+//        post.setTitle(postTitle);
+//        post.setContent(carContent);
+//        post.getCar().setBrand(carBrand);
+//        post.getCar().setModel(carModel);
+//        post.getCar().setYear(carYear);
+//        post.getCar().setColor(carColor);
+//        post.getCar().setEngine(carEngine);
+//        post.getCar().setGear(carGear);
+//        post.getCar().setFuelType(carFuelType);
+//        post.getCar().getTarrif().setName(creditTarifs);
+//        post.getCar().getTarrif().setCountMonths(creditMonthCount);
+//        post.getCar().getTarrif().setPrice(amount);
+//        post.getCar().getTarrif().setProcents(procents);
         try {
-            return ResponseEntity.ok(postService.savePost(post, carImages));
+            return ResponseEntity.ok(postService.savePost(post1, carImages));
+//            return ResponseEntity.ok(postService.savePost(post, null));
         } catch (NoFileExeption e) {
             throw new RuntimeException(e);
         } catch (PostUploadFailedException e) {
