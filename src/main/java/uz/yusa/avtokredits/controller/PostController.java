@@ -23,7 +23,7 @@ import uz.yusa.avtokredits.service.PostService;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/cars")
+@RequestMapping("/posts")
 public class PostController {
     private final PostService postService;
     @GetMapping
@@ -31,7 +31,7 @@ public class PostController {
         return ResponseEntity.ok(postService.getAllActivePosts());
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+//    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/add")
     public ResponseEntity<Post> addPost(@RequestBody UploadPostDto request) throws NoFileExeption {
         Post post = new Post();
