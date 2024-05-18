@@ -28,6 +28,11 @@ public class ApplicationService {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         return applicationRepository.findByIdAndCustomer_Email(id, email).get();
     }
+    public Application getApplication(Long id) {
+
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        return applicationRepository.findByIdAndCustomer_Email(id, email).get();
+    }
     public void closeApplicationById(Long id) {
         applicationRepository.updateIsClosedById(true,id);
     }
@@ -44,5 +49,9 @@ public class ApplicationService {
                 .build();
         return applicationRepository.save(app);
 
+    }
+
+    public Application getApplication() {
+        return null;
     }
 }

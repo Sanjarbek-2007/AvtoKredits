@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import uz.yusa.avtokredits.domain.Application;
 import uz.yusa.avtokredits.domain.post.Post;
+import uz.yusa.avtokredits.dto.UploadPostDto;
 import uz.yusa.avtokredits.exeption.NoFileExeption;
 import uz.yusa.avtokredits.exeption.PostUploadFailedException;
 import uz.yusa.avtokredits.service.PostService;
@@ -32,9 +33,24 @@ public class PostController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/add")
-    public ResponseEntity<Post> addPost(@RequestBody Post post,  @RequestPart("files") MultipartFile[] files) {
+    public ResponseEntity<Post> addPost(@RequestBody UploadPostDto request) throws NoFileExeption {
+        Post post = new Post();
+        post.setTitle(request.getPostTitle());
+        post.setContent(request.getCarContent());
+        post.getCar().setBrand(request.getCarBrand());
+        post.getCar().setModel(request.getCarModel());
+        post.getCar().setYear(request.getCarYear());
+        post.getCar().setColor(request.getCarColor());
+        post.getCar().setEngine(request.getCarEngine());
+        post.getCar().setGear(request.getCarGear());
+        post.getCar().setFuelType(request.getCarFuelType());
+        post.getCar().getTarrif().setName(request.getCreditTarifs());
+        post.getCar().getTarrif().setCountMonths(request.getCreditMonthCount());
+        post.getCar().getTarrif().setPrice(request.getAmount());
+        post.getCar().getTarrif().setProcents(request.getProcents());
+        MultipartFile[] carImages = request.getCarImages();
         try {
-            return ResponseEntity.ok(postService.savePost(post, files));
+            return ResponseEntity.ok(postService.savePost(post, carImages));
         } catch (NoFileExeption e) {
             throw new RuntimeException(e);
         } catch (PostUploadFailedException e) {

@@ -6,14 +6,20 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import uz.yusa.avtokredits.domain.Application;
+import uz.yusa.avtokredits.domain.Payment;
+import uz.yusa.avtokredits.domain.PaymentTimeTable;
+import uz.yusa.avtokredits.domain.post.CreditTarrif;
 import uz.yusa.avtokredits.domain.post.Post;
 import uz.yusa.avtokredits.exeption.NoFileExeption;
 import uz.yusa.avtokredits.exeption.PostUploadFailedException;
+import uz.yusa.avtokredits.repository.PaymentRepository;
 import uz.yusa.avtokredits.repository.PostRepository;
 
 @Service
@@ -22,7 +28,8 @@ public class PostService {
     private final PostRepository postRepository;
     private final ApplicationService applicationService;
     private final String storagePath = "src/main/resources/static/cars/";
-
+    private final PaymentTimeTableRepository paymentTimeTableRepository;
+    private final PaymentRepository paymentRepository;
 
     public List<Post> getAllPosts() {
         return postRepository.findAll();
@@ -34,9 +41,9 @@ public class PostService {
         return postRepository.findById(id).orElse(null);
     }
 
-    public Post savePost(Post post , MultipartFile[] files) throws NoFileExeption, PostUploadFailedException {
+    public Post savePost(Post post,  MultipartFile[] files) throws NoFileExeption, PostUploadFailedException {
 
-            if (files == null || files.length == 0 || Arrays.stream(files).allMatch(MultipartFile::isEmpty)) {
+        if (files == null || files.length == 0 || Arrays.stream(files).allMatch(MultipartFile::isEmpty)) {
                 throw new NoFileExeption("No file uploaded");
             }
 
@@ -59,12 +66,55 @@ public class PostService {
                     }
                 }
             }
+        CreditTarrif tarrif = post.getCar().getTarrif();
 
-            // Join file paths to a single string, assuming you store them as a comma-separated list
-            post.setPhotoPath(String.join(",", filePaths));
+        // Join file paths to a single string, assuming you store them as a comma-separated list
+
             postRepository.save(post);
 
             return post;
+    }
+
+    private void createPaymentTimeTable(CreditTarrif tarrif) {
+        double price = tarrif.getPrice();
+        int countMonths = tarrif.getCountMonths();
+        double procents = tarrif.getProcents();
+
+        double monthlyInterestRate = procents / 100 / 12;
+
+// Calculate the monthly payment
+        double monthlyPayment = (price * monthlyInterestRate) / (1 - Math.pow(1 + monthlyInterestRate, -countMonths));
+
+// Round the monthly payment to two decimal places
+        monthlyPayment = Math.round(monthlyPayment * 100.0) / 100.0;
+        PaymentTimeTable paymentTimeTable = new PaymentTimeTable();
+        List<Payment> payments = new ArrayList<>();
+        for (int i = 0; i < countMonths; i++) {
+            Date date = new Date();
+
+            // Convert Date to Calendar
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(date);
+
+            // Set day of the month
+            calendar.set(Calendar.DAY_OF_MONTH, new Date().getDay());
+
+            // Set month (Note: January is 0)
+            calendar.set(Calendar.MONTH, new Date().getMonth());
+
+            // Convert Calendar back to Date
+            Date modifiedDate = calendar.getTime();
+
+            Payment payment = new Payment();
+            payment.setAmount(monthlyPayment);
+            payment.setPaymentDate(new Date());
+            paymentRepository.save(payment);
+        }
+
+        paymentTimeTable.setPayments(payments);
+        paymentTimeTableRepository.save(paymentTimeTable);
+        System.out.println("Monthly payment: " + monthlyPayment);
+
     }
 
     public String deletePost(Long id) {
