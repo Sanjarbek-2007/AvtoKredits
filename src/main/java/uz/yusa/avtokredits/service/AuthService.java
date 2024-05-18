@@ -31,6 +31,7 @@ public class AuthService {
                 .email(dto.email())
                 .password(passwordEncoder.encode(dto.password()))
                 .username(dto.username())
+                .phoneNumber(dto.phoneNumber())
                 .build();
     }
 
@@ -40,16 +41,11 @@ public class AuthService {
         if (user != null) {
             user.setRoles(Collections.singletonList(roleRepository.findByName("USER")));
             userRepository.save(user);
-
-
                 String token = jwtProvider.generate(user);
                 return new JwtResponse(token);
             }
         return null;
     }
-
-
-
     public JwtResponse login(LoginDto loginDto){
         Optional<User> user = userRepository.findByEmail(loginDto.email());
         if (user.isPresent() && passwordEncoder.matches(loginDto.password(), user.get().getPassword())){
