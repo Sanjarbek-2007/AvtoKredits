@@ -36,6 +36,6 @@ public class Post {
     private String title;
     @Column(columnDefinition = "TEXT")
     private String content;
-
-    private Boolean isActive = Boolean.TRUE;
+    @Column(columnDefinition = "BOOLEAN DEFAULT TRUE")
+    private Boolean isActive ;
 }

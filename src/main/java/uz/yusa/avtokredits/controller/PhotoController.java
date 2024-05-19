@@ -6,10 +6,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,14 +25,53 @@ import uz.yusa.avtokredits.service.PhotoService;
 @RequiredArgsConstructor
 @RequestMapping("/images")
 public class PhotoController {
-    private final PhotoService photoService;
 
-    @GetMapping("/photos/{fileName:.+}")
-    public ResponseEntity<Resource> getPhoto(@PathVariable String fileName) {
-        Resource resource = photoService.loadFileAsResource(fileName);
+    private final PhotoRepository photoRepository; // Assuming you have a repository for Photo entity
 
+    @GetMapping("/{imageName}")
+    public ResponseEntity<Resource> getImage(@PathVariable String imageName) {
+        // Find the photo by name
+        Photo photo = photoRepository.findByPhotoName(imageName);
+        if (photo == null || photo.getPath() == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        // Load image data from file system
+        String filePath = photo.getPath(); // No need for concatenation
+        Path imagePath = Paths.get(filePath);
+        ByteArrayResource resource;
+        try {
+            resource = new ByteArrayResource(Files.readAllBytes(imagePath));
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+
+        // Set appropriate content type based on file extension
+        MediaType mediaType = getImageMediaType(imagePath);
+
+        // Prepare response with image data and content type
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                .contentType(mediaType)
+                .contentLength(resource.contentLength())
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + imageName + "\"")
                 .body(resource);
+    }
+
+    // Helper method to determine the content type based on file extension
+    private MediaType getImageMediaType(Path imagePath) {
+        String fileName = imagePath.getFileName().toString();
+        String fileExtension = fileName.substring(fileName.lastIndexOf('.') + 1).toLowerCase();
+
+        switch (fileExtension) {
+            case "jpg":
+            case "jpeg":
+                return MediaType.IMAGE_JPEG;
+            case "png":
+                return MediaType.IMAGE_PNG;
+            case "gif":
+                return MediaType.IMAGE_GIF;
+            default:
+                return MediaType.APPLICATION_OCTET_STREAM;
+        }
     }
 }

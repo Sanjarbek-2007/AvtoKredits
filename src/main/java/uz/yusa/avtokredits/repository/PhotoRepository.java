@@ -8,6 +8,11 @@ import org.springframework.data.repository.query.Param;
 import uz.yusa.avtokredits.domain.post.Photo;
 
 public interface PhotoRepository extends JpaRepository<Photo, Long> {
+
+
+    Photo findByPhotoName(String photoName);
+
+
     @Transactional
     @Modifying
     @Query(nativeQuery = true, value = "INSERT INTO post_photos (post_id, photos_id) values( :postId, :photoId )")

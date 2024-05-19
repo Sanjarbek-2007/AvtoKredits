@@ -34,7 +34,7 @@ public class PostService {
     private final PaymentRepository paymentRepository;
     private final UserRepository userRepository;
     private final PhotoRepository photoRepository;
-    private final String storagePath = "src/main/resources/static/cars/";
+
 
     public List<AllPostsDto> getAllPosts() {
 
@@ -52,6 +52,7 @@ public class PostService {
                             .path(photo.getPath())
                             .creditMonthCount(post.getCar().getTarrif().getCountMonths())
                             .amount(post.getCar().getTarrif().getPrice())
+
                             .procents(post.getCar().getTarrif().getProcents())
 
                     .build());
@@ -61,33 +62,29 @@ public class PostService {
         return dtos;
     }
     public List<AllPostsDto> getAllActivePosts() {
-
-        List<Post> all = postRepository.findAll();
+        List<Post> all = postRepository.findByIsActiveTrue();
         List<AllPostsDto> dtos = new ArrayList<>();
         for (Post post : all) {
-//            Photo photo = post.getPhotos().get(1);
-            dtos.add(AllPostsDto.builder()
+            Photo firstPhoto = post.getPhotos().isEmpty() ? null : post.getPhotos().get(0); // Get the first photo, if available
 
+            dtos.add(AllPostsDto.builder()
                     .id(post.getId())
                     .title(post.getTitle())
                     .carBrand(post.getCar().getBrand())
                     .carModel(post.getCar().getModel())
-                    .photoName(new Photo().getPhotoName())
-                    .path(new Photo().getPath())
+                    .photoName(firstPhoto != null ? firstPhoto.getPhotoName() : null) // Access photo fields if available
+                    .path(firstPhoto != null ? firstPhoto.getPath() : null) // Access photo fields if available
                     .creditMonthCount(post.getCar().getTarrif().getCountMonths())
                     .amount(post.getCar().getTarrif().getPrice())
                     .procents(post.getCar().getTarrif().getProcents())
-
                     .build());
-            System.out.println(post);
         }
-
         return dtos;
     }
     public Post getPostById(Long id) {
         return postRepository.findById(id).orElse(null);
     }
-
+    private final String storagePath = " src/main/resources/static/cars/";
     public Post savePost(Post post,  List<MultipartFile> files) throws NoFileExeption, PostUploadFailedException {
 
 
@@ -96,7 +93,7 @@ public class PostService {
             }
 
         List<String> filePaths = new ArrayList<>();
-
+        post.setIsActive(true);
         Post savedPost = postRepository.save(post);
 
         for (MultipartFile file : files) {

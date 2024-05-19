@@ -44,7 +44,7 @@ public class SecurityConfig {
                 .cors(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(registr ->
                         registr.requestMatchers("/auth/**","/posts/**"
-//                                        ,"/apps/**"
+                                        ,"/apps/**","/images/**","/files/**"
                                 ).permitAll()
                                 .requestMatchers("/posts/**").hasRole("ADMIN")
                                 .anyRequest().authenticated()
