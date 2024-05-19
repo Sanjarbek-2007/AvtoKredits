@@ -24,6 +24,7 @@ import uz.yusa.avtokredits.dto.AllPostsDto;
 import uz.yusa.avtokredits.dto.UploadPostDto;
 import uz.yusa.avtokredits.exeption.NoFileExeption;
 import uz.yusa.avtokredits.exeption.PostUploadFailedException;
+import uz.yusa.avtokredits.repository.PostRepository;
 import uz.yusa.avtokredits.service.PostService;
 
 @RestController
@@ -31,18 +32,18 @@ import uz.yusa.avtokredits.service.PostService;
 @RequestMapping("/posts")
 public class PostController {
     private final PostService postService;
+    private final PostRepository postRepository;
+
+
     @GetMapping
-    public ResponseEntity<List<AllPostsDto>> getCars() {
+    public ResponseEntity<List<AllPostsDto>> getDtoCars() {
+
         return ResponseEntity.ok(postService.getAllActivePosts());
     }
-/**/
 
-//    @PreAuthorize("hasRole('ADMIN')")
+
     @PostMapping("/add")
-    public ResponseEntity<Post> addPost(@ModelAttribute UploadPostDto dto
-
-
-) throws NoFileExeption {
+    public ResponseEntity<Post> addPost(@ModelAttribute UploadPostDto dto)throws NoFileExeption {
 
             Post post1 = Post.builder().title(dto.postTitle()).content(dto.carContent()).photos(new ArrayList<>()).car(new Car(dto.carBrand(),
                     dto.carModel(), dto.carYear(), dto.carColor(), dto.carEngine(), dto.carGear(), dto.carFuelType(),
@@ -51,7 +52,6 @@ public class PostController {
 
         try {
             return ResponseEntity.ok(postService.savePost(post1, dto.carImages()));
-//            return ResponseEntity.ok(postService.savePost(post, null));
         } catch (NoFileExeption e) {
             throw new RuntimeException(e);
         } catch (PostUploadFailedException e) {

@@ -5,18 +5,15 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import uz.yusa.avtokredits.domain.Application;
 import uz.yusa.avtokredits.domain.Payment;
 import uz.yusa.avtokredits.domain.PaymentTimeTable;
-import uz.yusa.avtokredits.domain.User;
 import uz.yusa.avtokredits.domain.post.CreditTarrif;
 import uz.yusa.avtokredits.domain.post.Photo;
 import uz.yusa.avtokredits.domain.post.Post;
@@ -33,11 +30,11 @@ import uz.yusa.avtokredits.repository.UserRepository;
 public class PostService {
     private final PostRepository postRepository;
     private final ApplicationService applicationService;
-    private final String storagePath = "src/main/resources/static/cars/";
     private final PaymentTimeTableRepository paymentTimeTableRepository;
     private final PaymentRepository paymentRepository;
     private final UserRepository userRepository;
     private final PhotoRepository photoRepository;
+    private final String storagePath = "src/main/resources/static/cars/";
 
     public List<AllPostsDto> getAllPosts() {
 
@@ -66,18 +63,17 @@ public class PostService {
     public List<AllPostsDto> getAllActivePosts() {
 
         List<Post> all = postRepository.findAll();
-        Photo photo1 = all.get(0).getPhotos().get(0);
         List<AllPostsDto> dtos = new ArrayList<>();
         for (Post post : all) {
-            Photo photo = post.getPhotos().get(0);
+//            Photo photo = post.getPhotos().get(1);
             dtos.add(AllPostsDto.builder()
 
                     .id(post.getId())
                     .title(post.getTitle())
                     .carBrand(post.getCar().getBrand())
                     .carModel(post.getCar().getModel())
-                    .photoName(photo.getPhotoName())
-                    .path(photo.getPath())
+                    .photoName(new Photo().getPhotoName())
+                    .path(new Photo().getPath())
                     .creditMonthCount(post.getCar().getTarrif().getCountMonths())
                     .amount(post.getCar().getTarrif().getPrice())
                     .procents(post.getCar().getTarrif().getProcents())
