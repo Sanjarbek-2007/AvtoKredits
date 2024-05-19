@@ -6,28 +6,23 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
 
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Setter
-public class UploadPostDto {
+import java.util.List;
 
-        private String postTitle;
-        private String carContent;
-        private MultipartFile[] carImages;
-        private String carBrand;
-        private String carModel;
-        private String carYear;
-        private String carColor;
-        private String carEngine;
-        private String carGear;
-        private String carFuelType;
-        private String creditTarifs;
-        private int creditMonthCount;
-        private double amount;
-        private double procents;
 
-        // Getters and setters
-        // (Omitted for brevity)
-
+public record UploadPostDto (
+        String postTitle,
+        String carContent,
+        List<MultipartFile> carImages,
+        String carBrand,
+        String carModel,
+        String carYear,
+        String carColor,
+        String carEngine,
+        String carGear,
+        String carFuelType,
+        String creditTarifs,
+        int creditMonthCount,
+        double amount,
+        double procents
+){
 }

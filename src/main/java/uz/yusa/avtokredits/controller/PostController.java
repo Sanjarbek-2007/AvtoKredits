@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -37,28 +38,29 @@ public class PostController {
 
 //    @PreAuthorize("hasRole('ADMIN')")
 @PostMapping("/add")
-public ResponseEntity<Post> addPost(
-       @RequestParam("postTitle") String postTitle,
-                                       @RequestParam("carContent") String carContent,
-       @RequestParam("carImages") List<MultipartFile> carImages,
-                                       @RequestParam("carBrand") String carBrand,
-                                       @RequestParam("carModel") String carModel,
-                                       @RequestParam("carYear") String carYear,
-                                       @RequestParam("carColor") String carColor,
-                                       @RequestParam("carEngine") String carEngine,
-                                       @RequestParam("carGear") String carGear,
-                                       @RequestParam("carFuelType") String carFuelType,
-                                       @RequestParam("creditTarifs") String creditTarifs,
-                                       @RequestParam("creditMonthCount") int creditMonthCount,
-                                       @RequestParam("amount") double amount,
-                                       @RequestParam("procents") double procents
+public ResponseEntity<Post> addPost(@ModelAttribute UploadPostDto dto
+//                                     @RequestParam("postTitle") String postTitle,
+//                                       @RequestParam("carContent") String carContent,
+//                                       @RequestParam("carImages") List<MultipartFile> carImages,
+//                                       @RequestParam("carBrand") String carBrand,
+//                                       @RequestParam("carModel") String carModel,
+//                                       @RequestParam("carYear") String carYear,
+//                                       @RequestParam("carColor") String carColor,
+//                                       @RequestParam("carEngine") String carEngine,
+//                                       @RequestParam("carGear") String carGear,
+//                                       @RequestParam("carFuelType") String carFuelType,
+//                                       @RequestParam("creditTarifs") String creditTarifs,
+//                                       @RequestParam("creditMonthCount") int creditMonthCount,
+//                                       @RequestParam("amount") double amount,
+//                                       @RequestParam("procents") double procents
+
 ) throws NoFileExeption {
 //
 //    Post post1 = Post.builder().photos(new ArrayList<>()).car(new Car("SDsd", "sdsd", "sdsd", "sdsds", "sdsdds", "AT", "AALS:",
 //            new CreditTarrif("dsdsdssd", 123, 123, 123, 123))).build();
-            Post post1 = Post.builder().title(postTitle).content(carContent).photos(new ArrayList<>()).car(new Car(carBrand,
-                    carModel, carYear, carColor, carEngine, carGear, carFuelType,
-            new CreditTarrif(creditTarifs, amount, creditMonthCount, procents, amount/100*procents))).build();
+            Post post1 = Post.builder().title(dto.postTitle()).content(dto.carContent()).photos(new ArrayList<>()).car(new Car(dto.carBrand(),
+                    dto.carModel(), dto.carYear(), dto.carColor(), dto.carEngine(), dto.carGear(), dto.carFuelType(),
+            new CreditTarrif(dto.creditTarifs(), dto.amount(), dto.creditMonthCount(), dto.procents(), dto.amount()/100*dto.procents()))).build();
 
 
 //        post.setTitle(postTitle);
@@ -75,7 +77,7 @@ public ResponseEntity<Post> addPost(
 //        post.getCar().getTarrif().setPrice(amount);
 //        post.getCar().getTarrif().setProcents(procents);
         try {
-            return ResponseEntity.ok(postService.savePost(post1, carImages));
+            return ResponseEntity.ok(postService.savePost(post1, dto.carImages()));
 //            return ResponseEntity.ok(postService.savePost(post, null));
         } catch (NoFileExeption e) {
             throw new RuntimeException(e);

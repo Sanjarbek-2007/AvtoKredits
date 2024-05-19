@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import uz.yusa.avtokredits.domain.Application;
 import uz.yusa.avtokredits.domain.post.Post;
@@ -21,6 +22,23 @@ public class ApplicationService {
         return applicationRepository.findByCustomer_Email(email);
 
     }
+
+
+    public Application saveApplication(Application application) {
+        try {
+            String name = SecurityContextHolder.getContext().getAuthentication().getName();
+            User user = userRepository.findByEmail(name)
+                    .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + name));
+
+            application.setCustomer(user);
+            application.setAppliedDate(new Date());
+
+            return applicationRepository.save(application);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to save application", e);
+        }
+    }
+
 
 
     public Application getApplicationById(Long id) {
@@ -50,6 +68,10 @@ public class ApplicationService {
         return applicationRepository.save(app);
 
     }
+
+
+
+
 
     public Application getApplication() {
         return null;
