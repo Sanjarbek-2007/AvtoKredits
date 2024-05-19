@@ -17,39 +17,20 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uz.yusa.avtokredits.domain.post.Photo;
 import uz.yusa.avtokredits.repository.PhotoRepository;
+import uz.yusa.avtokredits.service.PhotoService;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/images")
 public class PhotoController {
-    private final PhotoRepository photoRepository;
-    @GetMapping("/{photoId}")
-    public ResponseEntity<Resource> getImage(@PathVariable Long photoId) {
-        Photo photo = photoRepository.findById(photoId).orElse(null);
-        try {
+    private final PhotoService photoService;
 
-            Path imagePath = Paths.get("path/to/your/images/directory").resolve(photo.getPhotoName()).normalize();
-            Resource resource = new UrlResource(imagePath.toUri());
+    @GetMapping("/photos/{fileName:.+}")
+    public ResponseEntity<Resource> getPhoto(@PathVariable String fileName) {
+        Resource resource = photoService.loadFileAsResource(fileName);
 
-            if (resource.exists() && resource.isReadable()) {
-                String contentType = Files.probeContentType(imagePath);
-                if (contentType == null) {
-                    contentType = "application/octet-stream";
-                }
-
-                HttpHeaders headers = new HttpHeaders();
-                headers.add(HttpHeaders.CONTENT_TYPE, contentType);
-
-                return ResponseEntity.ok()
-                        .headers(headers)
-                        .body(resource);
-            } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-            }
-        } catch (MalformedURLException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-        } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        }
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                .body(resource);
     }
 }

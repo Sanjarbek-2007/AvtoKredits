@@ -25,7 +25,7 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/avtokredits
     username: postgres
-    password: doniyor2007
+    password: tplink01459520
     driverClassName: org.postgresql.Driver
 
   jpa:

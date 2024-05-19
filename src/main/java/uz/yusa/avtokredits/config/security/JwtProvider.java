@@ -14,6 +14,8 @@ import java.util.StringJoiner;
 
 @Component
 public class JwtProvider {
+    public String userEmail;
+
     @Value("${secret.key}")
     private String secretKey;
 
@@ -63,6 +65,7 @@ public class JwtProvider {
     public boolean validate(final String token) {
         try {
             Claims claims = parse(token);
+
             if (claims.getExpiration().after(new Date())) {
                 return true;
             }
@@ -72,5 +75,7 @@ public class JwtProvider {
         }
         return false;
     }
+
+
 }
 

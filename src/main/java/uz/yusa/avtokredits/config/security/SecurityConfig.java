@@ -46,7 +46,9 @@ public class SecurityConfig {
                         registr.requestMatchers("/auth/**","/posts/**"
 //                                        ,"/apps/**"
                                 ).permitAll()
+                                .requestMatchers("/posts/**").hasRole("ADMIN")
                                 .anyRequest().authenticated()
+
                 ).sessionManagement(config -> config.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 

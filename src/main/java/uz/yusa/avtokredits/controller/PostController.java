@@ -20,6 +20,7 @@ import uz.yusa.avtokredits.domain.Application;
 import uz.yusa.avtokredits.domain.post.Car;
 import uz.yusa.avtokredits.domain.post.CreditTarrif;
 import uz.yusa.avtokredits.domain.post.Post;
+import uz.yusa.avtokredits.dto.AllPostsDto;
 import uz.yusa.avtokredits.dto.UploadPostDto;
 import uz.yusa.avtokredits.exeption.NoFileExeption;
 import uz.yusa.avtokredits.exeption.PostUploadFailedException;
@@ -31,51 +32,23 @@ import uz.yusa.avtokredits.service.PostService;
 public class PostController {
     private final PostService postService;
     @GetMapping
-    public ResponseEntity<List<Post>> getCars() {
+    public ResponseEntity<List<AllPostsDto>> getCars() {
         return ResponseEntity.ok(postService.getAllActivePosts());
     }
 /**/
 
 //    @PreAuthorize("hasRole('ADMIN')")
-@PostMapping("/add")
-public ResponseEntity<Post> addPost(@ModelAttribute UploadPostDto dto
-//                                     @RequestParam("postTitle") String postTitle,
-//                                       @RequestParam("carContent") String carContent,
-//                                       @RequestParam("carImages") List<MultipartFile> carImages,
-//                                       @RequestParam("carBrand") String carBrand,
-//                                       @RequestParam("carModel") String carModel,
-//                                       @RequestParam("carYear") String carYear,
-//                                       @RequestParam("carColor") String carColor,
-//                                       @RequestParam("carEngine") String carEngine,
-//                                       @RequestParam("carGear") String carGear,
-//                                       @RequestParam("carFuelType") String carFuelType,
-//                                       @RequestParam("creditTarifs") String creditTarifs,
-//                                       @RequestParam("creditMonthCount") int creditMonthCount,
-//                                       @RequestParam("amount") double amount,
-//                                       @RequestParam("procents") double procents
+    @PostMapping("/add")
+    public ResponseEntity<Post> addPost(@ModelAttribute UploadPostDto dto
+
 
 ) throws NoFileExeption {
-//
-//    Post post1 = Post.builder().photos(new ArrayList<>()).car(new Car("SDsd", "sdsd", "sdsd", "sdsds", "sdsdds", "AT", "AALS:",
-//            new CreditTarrif("dsdsdssd", 123, 123, 123, 123))).build();
+
             Post post1 = Post.builder().title(dto.postTitle()).content(dto.carContent()).photos(new ArrayList<>()).car(new Car(dto.carBrand(),
                     dto.carModel(), dto.carYear(), dto.carColor(), dto.carEngine(), dto.carGear(), dto.carFuelType(),
             new CreditTarrif(dto.creditTarifs(), dto.amount(), dto.creditMonthCount(), dto.procents(), dto.amount()/100*dto.procents()))).build();
 
 
-//        post.setTitle(postTitle);
-//        post.setContent(carContent);
-//        post.getCar().setBrand(carBrand);
-//        post.getCar().setModel(carModel);
-//        post.getCar().setYear(carYear);
-//        post.getCar().setColor(carColor);
-//        post.getCar().setEngine(carEngine);
-//        post.getCar().setGear(carGear);
-//        post.getCar().setFuelType(carFuelType);
-//        post.getCar().getTarrif().setName(creditTarifs);
-//        post.getCar().getTarrif().setCountMonths(creditMonthCount);
-//        post.getCar().getTarrif().setPrice(amount);
-//        post.getCar().getTarrif().setProcents(procents);
         try {
             return ResponseEntity.ok(postService.savePost(post1, dto.carImages()));
 //            return ResponseEntity.ok(postService.savePost(post, null));
@@ -102,7 +75,5 @@ public ResponseEntity<Post> addPost(@ModelAttribute UploadPostDto dto
     public ResponseEntity<Application> buyCar(@PathVariable Long id) {
         return ResponseEntity.ok(postService.buyPost(id));
     }
-
-
 
 }

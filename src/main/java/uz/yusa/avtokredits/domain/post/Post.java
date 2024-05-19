@@ -7,6 +7,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import java.util.List;
@@ -28,14 +29,13 @@ public class Post {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "post")
+    @ManyToMany
     private List<Photo> photos;
     @Embedded
     private Car car;
     private String title;
     @Column(columnDefinition = "TEXT")
     private String content;
-    @ManyToOne
-    private User author;
+
     private Boolean isActive = Boolean.TRUE;
 }

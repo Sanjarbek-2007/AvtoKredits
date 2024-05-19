@@ -10,17 +10,23 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import uz.yusa.avtokredits.domain.Application;
 import uz.yusa.avtokredits.domain.Payment;
 import uz.yusa.avtokredits.domain.PaymentTimeTable;
+import uz.yusa.avtokredits.domain.User;
 import uz.yusa.avtokredits.domain.post.CreditTarrif;
+import uz.yusa.avtokredits.domain.post.Photo;
 import uz.yusa.avtokredits.domain.post.Post;
+import uz.yusa.avtokredits.dto.AllPostsDto;
 import uz.yusa.avtokredits.exeption.NoFileExeption;
 import uz.yusa.avtokredits.exeption.PostUploadFailedException;
 import uz.yusa.avtokredits.repository.PaymentRepository;
+import uz.yusa.avtokredits.repository.PhotoRepository;
 import uz.yusa.avtokredits.repository.PostRepository;
+import uz.yusa.avtokredits.repository.UserRepository;
 
 @Service
 @RequiredArgsConstructor
@@ -30,38 +36,87 @@ public class PostService {
     private final String storagePath = "src/main/resources/static/cars/";
     private final PaymentTimeTableRepository paymentTimeTableRepository;
     private final PaymentRepository paymentRepository;
+    private final UserRepository userRepository;
+    private final PhotoRepository photoRepository;
 
-    public List<Post> getAllPosts() {
-        return postRepository.findAll();
+    public List<AllPostsDto> getAllPosts() {
+
+        List<Post> all = postRepository.findAll();
+        List<AllPostsDto> dtos = new ArrayList<>();
+        for (Post post : all) {
+            Photo photo = post.getPhotos().get(1);
+            dtos.add(AllPostsDto.builder()
+
+                            .id(post.getId())
+                            .title(post.getTitle())
+                            .carBrand(post.getCar().getBrand())
+                            .carModel(post.getCar().getModel())
+                            .photoName(photo.getPhotoName())
+                            .path(photo.getPath())
+                            .creditMonthCount(post.getCar().getTarrif().getCountMonths())
+                            .amount(post.getCar().getTarrif().getPrice())
+                            .procents(post.getCar().getTarrif().getProcents())
+
+                    .build());
+            System.out.println(post);
+        }
+
+        return dtos;
     }
-    public List<Post> getAllActivePosts() {
-        return postRepository.findByIsActiveTrue();
+    public List<AllPostsDto> getAllActivePosts() {
+
+        List<Post> all = postRepository.findAll();
+        Photo photo1 = all.get(0).getPhotos().get(0);
+        List<AllPostsDto> dtos = new ArrayList<>();
+        for (Post post : all) {
+            Photo photo = post.getPhotos().get(0);
+            dtos.add(AllPostsDto.builder()
+
+                    .id(post.getId())
+                    .title(post.getTitle())
+                    .carBrand(post.getCar().getBrand())
+                    .carModel(post.getCar().getModel())
+                    .photoName(photo.getPhotoName())
+                    .path(photo.getPath())
+                    .creditMonthCount(post.getCar().getTarrif().getCountMonths())
+                    .amount(post.getCar().getTarrif().getPrice())
+                    .procents(post.getCar().getTarrif().getProcents())
+
+                    .build());
+            System.out.println(post);
+        }
+
+        return dtos;
     }
     public Post getPostById(Long id) {
         return postRepository.findById(id).orElse(null);
     }
 
     public Post savePost(Post post,  List<MultipartFile> files) throws NoFileExeption, PostUploadFailedException {
-//
-//        MultipartFile[] files=  photos.toArray();
+
 
         if (files == null || files.size() == 0 || files.stream().allMatch(MultipartFile::isEmpty)) {
                 throw new NoFileExeption("No file uploaded");
             }
 
-            List<String> filePaths = new ArrayList<>();
+        List<String> filePaths = new ArrayList<>();
 
-            for (MultipartFile file : files) {
+        Post savedPost = postRepository.save(post);
+
+        for (MultipartFile file : files) {
                 if (!file.isEmpty()) {
                     try {
+
                         // Save the file to a specific location on server
                         byte[] bytes = file.getBytes();
-                        String fileName = post.getId() + "-" + file.getOriginalFilename();
+                        String fileName = savedPost.getId() + "-" + file.getOriginalFilename();
                         String filePath = storagePath + fileName;
                         BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(new File(filePath)));
                         stream.write(bytes);
                         stream.close();
                         filePaths.add(filePath);
+                        Photo photo = photoRepository.save(new Photo(fileName, "jpg", filePath));
+                        photoRepository.addPhotoByPhotoIdAndPostId(savedPost.getId(), photo.getId());
                     } catch (IOException e) {
                         e.printStackTrace();
                         throw new PostUploadFailedException("File upload failed for file: " + file.getOriginalFilename());
@@ -69,10 +124,6 @@ public class PostService {
                 }
             }
         CreditTarrif tarrif = post.getCar().getTarrif();
-
-        // Join file paths to a single string, assuming you store them as a comma-separated list
-
-            postRepository.save(post);
 
             return post;
     }
