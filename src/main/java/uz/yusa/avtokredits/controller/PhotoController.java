@@ -18,7 +18,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uz.yusa.avtokredits.domain.post.Photo;
+import uz.yusa.avtokredits.domain.post.Post;
 import uz.yusa.avtokredits.repository.PhotoRepository;
+import uz.yusa.avtokredits.repository.PostRepository;
 import uz.yusa.avtokredits.service.PhotoService;
 
 @RestController
@@ -27,11 +29,13 @@ import uz.yusa.avtokredits.service.PhotoService;
 public class PhotoController {
 
     private final PhotoRepository photoRepository; // Assuming you have a repository for Photo entity
-
-    @GetMapping("/{imageName}")
-    public ResponseEntity<Resource> getImage(@PathVariable String imageName) {
+    private final PostRepository postRepository;
+    @GetMapping("/{id}")
+    public ResponseEntity<Resource> getImage(@PathVariable Long id) {
         // Find the photo by name
-        Photo photo = photoRepository.findByPhotoName(imageName);
+
+        Post post = postRepository.findById(id).get();
+        Photo photo = post.getPhotos().get(0);
         if (photo == null || photo.getPath() == null) {
             return ResponseEntity.notFound().build();
         }
@@ -53,7 +57,7 @@ public class PhotoController {
         return ResponseEntity.ok()
                 .contentType(mediaType)
                 .contentLength(resource.contentLength())
-                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + imageName + "\"")
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + photo.getPhotoName() + "\"")
                 .body(resource);
     }
 

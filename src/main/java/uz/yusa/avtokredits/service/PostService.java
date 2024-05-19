@@ -65,15 +65,15 @@ public class PostService {
         List<Post> all = postRepository.findByIsActiveTrue();
         List<AllPostsDto> dtos = new ArrayList<>();
         for (Post post : all) {
-            Photo firstPhoto = post.getPhotos().isEmpty() ? null : post.getPhotos().get(0); // Get the first photo, if available
+
 
             dtos.add(AllPostsDto.builder()
                     .id(post.getId())
                     .title(post.getTitle())
                     .carBrand(post.getCar().getBrand())
                     .carModel(post.getCar().getModel())
-                    .photoName(firstPhoto != null ? firstPhoto.getPhotoName() : null) // Access photo fields if available
-                    .path(firstPhoto != null ? firstPhoto.getPath() : null) // Access photo fields if available
+//                    .photoName(firstPhoto.getPhotoName()) // Access photo fields if available
+//                    .path(firstPhoto.getPath()) // Access photo fields if available
                     .creditMonthCount(post.getCar().getTarrif().getCountMonths())
                     .amount(post.getCar().getTarrif().getPrice())
                     .procents(post.getCar().getTarrif().getProcents())
