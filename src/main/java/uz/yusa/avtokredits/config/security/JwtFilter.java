@@ -32,6 +32,8 @@ public class JwtFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
+
+
         String token = header.substring(BEARER.length());
 
         if (!jwtProvider.validate(token)) {
@@ -52,6 +54,7 @@ public class JwtFilter extends OncePerRequestFilter {
                         roles.stream().map(SimpleGrantedAuthority::new).toList()
                 )
         );
+
 
         filterChain.doFilter(request,response);
 

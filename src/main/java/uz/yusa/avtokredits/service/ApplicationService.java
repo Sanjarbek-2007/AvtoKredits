@@ -27,17 +27,27 @@ public class ApplicationService {
     public Application saveApplication(Application application) {
         try {
             String name = SecurityContextHolder.getContext().getAuthentication().getName();
+
+            // Установка полей из формы входных данных
+            application.setFullName(application.getFullName());
+            application.setPhone(application.getPhone());
+            application.setCar(application.getCar());
+            application.setCarPrice(application.getCarPrice());
+            application.setLoanAmount(application.getLoanAmount());
+            application.setAppliedDate(new Date());
+
+            // Получение пользователя по email
             User user = userRepository.findByEmail(name)
                     .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + name));
 
-            application.setCustomer(user);
-            application.setAppliedDate(new Date());
+            application.setCustomer(user); // Установка пользователя
 
-            return applicationRepository.save(application);
+            return applicationRepository.save(application); // Сохранение заявки
         } catch (Exception e) {
             throw new RuntimeException("Failed to save application", e);
         }
     }
+
 
 
 

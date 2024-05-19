@@ -27,14 +27,31 @@ public class Application {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
+
     @OneToOne
     private User customer;
+
+    @Column(name = "fullName")
+    private String fullName;
+
+    @Column(name = "phone")
+    private String phone;
+
+    @Column(name = "car")
+    private String car;
+
+    @Column(name = "car_Price")
+    private String carPrice;
+
+    @Column(name = "loanAmount")
+    private String loanAmount;
+
     private String title;
     private String description;
+
     private Boolean isClosed = Boolean.FALSE;
     @OneToOne
     private Post post;
 
     private Date appliedDate;
-
 }
