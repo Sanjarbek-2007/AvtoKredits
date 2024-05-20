@@ -36,8 +36,8 @@ public class ApplicationService {
             applicationEntity.setCar(postRepository.findById(application.car()).orElse(null));
             applicationEntity.setLoanAmount(application.loanAmount());
             applicationEntity.setAppliedDate(new Date());
-
-
+            applicationEntity.setIsAccepted(false);
+            applicationEntity.setIsClosed(false);
             applicationRepository.save(applicationEntity); // Сохранение заявки
             return application;
         } catch (Exception e) {

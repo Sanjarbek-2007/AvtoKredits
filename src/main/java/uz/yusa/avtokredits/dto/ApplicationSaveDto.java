@@ -15,7 +15,5 @@ public record ApplicationSaveDto(
          String loanAmount,
          String title,
          String description,
-         Boolean isClosed,
-         Boolean isAccepted ,
          Post post
 ){}
