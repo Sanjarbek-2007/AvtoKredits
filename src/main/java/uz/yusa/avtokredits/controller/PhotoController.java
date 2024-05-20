@@ -5,6 +5,9 @@ import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
@@ -59,6 +62,32 @@ public class PhotoController {
                 .contentLength(resource.contentLength())
                 .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + photo.getPhotoName() + "\"")
                 .body(resource);
+    }
+
+    @GetMapping("/{id}/photos")
+    public ResponseEntity<List<Resource>> getAllPhotos(@PathVariable Long id) {
+        Optional<Post> postOptional = postRepository.findById(id);
+        if (!postOptional.isPresent()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Post post = postOptional.get();
+        List<Resource> photoResources = new ArrayList<>();
+
+        for (Photo photo : post.getPhotos()) {
+            Path imagePath = Paths.get(photo.getPath());
+            System.out.println(photo.getPath());
+            ByteArrayResource resource;
+            try {
+                resource = new ByteArrayResource(Files.readAllBytes(imagePath));
+            } catch (IOException e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            }
+            MediaType mediaType = getImageMediaType(imagePath);
+            photoResources.add(resource);
+        }
+
+        return ResponseEntity.ok().body(photoResources);
     }
 
     // Helper method to determine the content type based on file extension
