@@ -34,7 +34,7 @@ public class PhotoController {
     private final PhotoRepository photoRepository; // Assuming you have a repository for Photo entity
     private final PostRepository postRepository;
     @GetMapping("/{id}")
-    public ResponseEntity<Resource> getImage(@PathVariable Long id) {
+        public ResponseEntity<Resource> getImage(@PathVariable Long id) {
         // Find the photo by name
 
         Post post = postRepository.findById(id).get();
