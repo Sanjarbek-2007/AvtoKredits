@@ -9,13 +9,16 @@ import org.springframework.stereotype.Service;
 import uz.yusa.avtokredits.domain.Application;
 import uz.yusa.avtokredits.domain.post.Post;
 import uz.yusa.avtokredits.domain.User;
+import uz.yusa.avtokredits.dto.ApplicationSaveDto;
 import uz.yusa.avtokredits.repository.ApplicationRepository;
+import uz.yusa.avtokredits.repository.PostRepository;
 import uz.yusa.avtokredits.repository.UserRepository;
 
 @Service
 @RequiredArgsConstructor
 public class ApplicationService {
     public final ApplicationRepository applicationRepository;
+    public final PostRepository postRepository;
     public final UserRepository userRepository;
     public List<Application> getAllApplications() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -24,25 +27,19 @@ public class ApplicationService {
     }
 
 
-    public Application saveApplication(Application application) {
+    public ApplicationSaveDto saveApplication(ApplicationSaveDto application) {
         try {
-            String name = SecurityContextHolder.getContext().getAuthentication().getName();
-
+            Application applicationEntity = new Application();
             // Установка полей из формы входных данных
-            application.setFullName(application.getFullName());
-            application.setPhone(application.getPhone());
-            application.setCar(application.getCar());
-            application.setCarPrice(application.getCarPrice());
-            application.setLoanAmount(application.getLoanAmount());
-            application.setAppliedDate(new Date());
+            applicationEntity.setFullName(application.fullName());
+            applicationEntity.setPhone(application.phone());
+            applicationEntity.setCar(postRepository.findById(application.car()).orElse(null));
+            applicationEntity.setLoanAmount(application.loanAmount());
+            applicationEntity.setAppliedDate(new Date());
 
-            // Получение пользователя по email
-            User user = userRepository.findByEmail(name)
-                    .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + name));
 
-            application.setCustomer(user); // Установка пользователя
-
-            return applicationRepository.save(application); // Сохранение заявки
+            applicationRepository.save(applicationEntity); // Сохранение заявки
+            return application;
         } catch (Exception e) {
             throw new RuntimeException("Failed to save application", e);
         }
@@ -85,5 +82,13 @@ public class ApplicationService {
 
     public Application getApplication() {
         return null;
+    }
+
+    public Application acceptApp(Long id) {
+        applicationRepository.updateIsAcceptedById(true,id);
+
+
+        return applicationRepository.findById(id).orElse(null);
+
     }
 }

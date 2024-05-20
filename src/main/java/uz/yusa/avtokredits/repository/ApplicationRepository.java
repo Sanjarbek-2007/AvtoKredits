@@ -13,6 +13,11 @@ import uz.yusa.avtokredits.domain.Application;
 public interface ApplicationRepository extends JpaRepository<Application, Long> {
     @Transactional
     @Modifying
+    @Query("update Application a set a.isAccepted = ?1 where a.id = ?2")
+    int updateIsAcceptedById(Boolean isAccepted, Long id);
+
+    @Transactional
+    @Modifying
     @Query("update Application a set a.isClosed = ?1 where a.id = ?2")
     int updateIsClosedById(Boolean isClosed, Long id);
 

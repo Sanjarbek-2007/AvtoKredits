@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uz.yusa.avtokredits.domain.Application;
+import uz.yusa.avtokredits.dto.ApplicationSaveDto;
 import uz.yusa.avtokredits.repository.ApplicationRepository;
 import uz.yusa.avtokredits.service.ApplicationService;
 
@@ -27,27 +28,31 @@ public class ApplicationController {
 
 
     @PostMapping("/add")
-    public ResponseEntity<Application> saveApplication(@RequestBody Application application) {
+    public ResponseEntity<ApplicationSaveDto> saveApplication(@RequestBody ApplicationSaveDto application) {
         try {
-            Application savedApplication = applicationService.saveApplication(application);
+            ApplicationSaveDto savedApplication = applicationService.saveApplication(application);
             return new ResponseEntity<>(savedApplication, HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    @PostMapping("/accept/{id}")
+    public ResponseEntity<Application> acceptApplication(@PathVariable Long id) {
+        return new ResponseEntity<>(applicationService.acceptApp(id), HttpStatus.ACCEPTED);
+    }
 
-
-    @GetMapping("/id")
+    @GetMapping("/{id}" )
     public ResponseEntity<Application> getApplicationUsers(@PathVariable Long id) {
 
         return ResponseEntity.ok(applicationService.getApplicationById(id));
     }
-    @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/id/admin")
-    public ResponseEntity<Application> getApplicationAdmins(@PathVariable Long id) {
 
-        return ResponseEntity.ok(applicationService.getApplication(id));
-    }
+//    @PreAuthorize("hasRole('ADMIN')")
+//    @GetMapping("/id/admin")
+//    public ResponseEntity<Application> getApplicationAdmins(@PathVariable Long id) {
+//
+//        return ResponseEntity.ok(applicationService.getApplication(id));
+//    }
 
 
 }
