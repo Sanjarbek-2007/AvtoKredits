@@ -44,16 +44,16 @@ public class PostService {
             Photo photo = post.getPhotos().get(1);
             dtos.add(AllPostsDto.builder()
 
-                            .id(post.getId())
-                            .title(post.getTitle())
-                            .carBrand(post.getCar().getBrand())
-                            .carModel(post.getCar().getModel())
-                            .photoName(photo.getPhotoName())
-                            .path(photo.getPath())
-                            .creditMonthCount(post.getCar().getTarrif().getCountMonths())
-                            .amount(post.getCar().getTarrif().getPrice())
+                    .id(post.getId())
+                    .title(post.getTitle())
+                    .carBrand(post.getCar().getBrand())
+                    .carModel(post.getCar().getModel())
+//                            .photoName(photo.getPhotoName())
+//                            .path(photo.getPath())
+                    .creditMonthCount(post.getCar().getTarrif().getCountMonths())
+                    .amount(post.getCar().getTarrif().getPrice())
 
-                            .procents(post.getCar().getTarrif().getProcents())
+                    .procents(post.getCar().getTarrif().getProcents())
 
                     .build());
             System.out.println(post);
@@ -84,41 +84,49 @@ public class PostService {
     public Post getPostById(Long id) {
         return postRepository.findById(id).orElse(null);
     }
-    private final String storagePath = " src/main/resources/static/cars/";
+    private final String storagePath = "src/main/resources/static/cars/";
     public Post savePost(Post post,  List<MultipartFile> files) throws NoFileExeption, PostUploadFailedException {
 
 
         if (files == null || files.size() == 0 || files.stream().allMatch(MultipartFile::isEmpty)) {
-                throw new NoFileExeption("No file uploaded");
-            }
+            throw new NoFileExeption("No file uploaded");
+        }
 
         List<String> filePaths = new ArrayList<>();
         post.setIsActive(true);
         Post savedPost = postRepository.save(post);
 
-        for (MultipartFile file : files) {
-                if (!file.isEmpty()) {
-                    try {
 
-                        // Save the file to a specific location on server
-                        byte[] bytes = file.getBytes();
-                        String fileName = savedPost.getId() + "-" + file.getOriginalFilename();
-                        String filePath = storagePath + fileName;
-                        BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(new File(filePath)));
-                        stream.write(bytes);
-                        stream.close();
-                        filePaths.add(filePath);
-                        Photo photo = photoRepository.save(new Photo(fileName, "jpg", filePath));
-                        photoRepository.addPhotoByPhotoIdAndPostId(savedPost.getId(), photo.getId());
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        throw new PostUploadFailedException("File upload failed for file: " + file.getOriginalFilename());
+        for (MultipartFile file : files) {
+            if (!file.isEmpty()) {
+                try {
+                    byte[] bytes = file.getBytes();
+                    String fileName = savedPost.getId() + "-" + file.getOriginalFilename();
+                    String filePath = storagePath + fileName;
+
+                    // Ensure the directory exists
+                    File dir = new File(storagePath);
+                    if (!dir.exists()) {
+                        dir.mkdirs();
                     }
+
+                    BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(new File(filePath)));
+                    stream.write(bytes);
+                    stream.close();
+
+                    filePaths.add(filePath);
+                    Photo photo = photoRepository.save(new Photo(fileName, "jpg", filePath));
+                    photoRepository.addPhotoByPhotoIdAndPostId(savedPost.getId(), photo.getId());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    throw new PostUploadFailedException("File upload failed for file: " + file.getOriginalFilename());
                 }
             }
+
+        }
         CreditTarrif tarrif = post.getCar().getTarrif();
 
-            return post;
+        return post;
     }
 
     private void createPaymentTimeTable(CreditTarrif tarrif) {
@@ -168,13 +176,13 @@ public class PostService {
     }
 
     public Post updatePost(Post post, Long id) {
-         postRepository.updateCarAndTitleAndContentById(
+        postRepository.updateCarAndTitleAndContentById(
                 post.getCar(),
                 post.getTitle(),
                 post.getContent(),
-                 id
+                id
         );
-         return  post;
+        return  post;
     }
 
     public Application buyPost(Long id) {

@@ -13,36 +13,36 @@ import uz.yusa.avtokredits.repository.PostRepository;
 
 @Service
 public class PhotoService {
-
-    @Autowired
-    private PostRepository postRepository;
-
-    private final Path fileStorageLocation;
-
-    public PhotoService() {
-        this.fileStorageLocation = Paths.get("path/to/photos")
-                .toAbsolutePath().normalize();
-    }
-
-    public List<PhotoDto> getAllPhotos() {
-        List<Post> posts = postRepository.findAll();
-        return posts.stream()
-                .flatMap(post -> post.getPhotos().stream())
-                .map(PhotoDto::new)
-                .collect(Collectors.toList());
-    }
-
-    public Resource loadFileAsResource(String fileName) {
-        try {
-            Path filePath = this.fileStorageLocation.resolve(fileName).normalize();
-            Resource resource = new UrlResource(filePath.toUri());
-            if (resource.exists()) {
-                return resource;
-            } else {
-                throw new RuntimeException("File not found " + fileName);
-            }
-        } catch (Exception ex) {
-            throw new RuntimeException("File not found " + fileName, ex);
-        }
-    }
+//
+//    @Autowired
+//    private PostRepository postRepository;
+//
+//    private final Path fileStorageLocation;
+//
+//    public PhotoService() {
+//        this.fileStorageLocation = Paths.get("path/to/photos")
+//                .toAbsolutePath().normalize();
+//    }
+//
+//    public List<PhotoDto> getAllPhotos() {
+//        List<Post> posts = postRepository.findAll();
+//        return posts.stream()
+//                .flatMap(post -> post.getPhotos().stream())
+//                .map(PhotoDto::new)
+//                .collect(Collectors.toList());
+//    }
+//
+//    public Resource loadFileAsResource(String fileName) {
+//        try {
+//            Path filePath = this.fileStorageLocation.resolve(fileName).normalize();
+//            Resource resource = new UrlResource(filePath.toUri());
+//            if (resource.exists()) {
+//                return resource;
+//            } else {
+//                throw new RuntimeException("File not found " + fileName);
+//            }
+//        } catch (Exception ex) {
+//            throw new RuntimeException("File not found " + fileName, ex);
+//        }
+//    }
 }
