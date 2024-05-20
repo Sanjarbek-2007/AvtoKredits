@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,6 +19,7 @@ import uz.yusa.avtokredits.domain.post.CreditTarrif;
 import uz.yusa.avtokredits.domain.post.Photo;
 import uz.yusa.avtokredits.domain.post.Post;
 import uz.yusa.avtokredits.dto.AllPostsDto;
+import uz.yusa.avtokredits.dto.GetPostDto;
 import uz.yusa.avtokredits.exeption.NoFileExeption;
 import uz.yusa.avtokredits.exeption.PostUploadFailedException;
 import uz.yusa.avtokredits.repository.PaymentRepository;
@@ -81,8 +83,28 @@ public class PostService {
         }
         return dtos;
     }
-    public Post getPostById(Long id) {
+    public Post findPostById(Long id) {
         return postRepository.findById(id).orElse(null);
+    }
+    public GetPostDto getPostById(Long id) {
+        Post post = postRepository.findById(id).orElse(null);
+        GetPostDto build = GetPostDto.builder()
+                .id(post.getId())
+                .photoIds(post.getPhotos().stream().map(photo -> photo.getId()).toList())
+                .carContent(post.getContent())
+                .carBrand(post.getCar().getBrand())
+                .carModel(post.getCar().getModel())
+                .carYear(post.getCar().getYear())
+                .carColor(post.getCar().getColor())
+                .carEngine(post.getCar().getEngine())
+                .carGear(post.getCar().getGear())
+                .carFuelType(post.getCar().getFuelType())
+                .creditTarifs(post.getCar().getTarrif().getName())
+                .creditMonthCount(post.getCar().getTarrif().getCountMonths())
+                .amount(post.getCar().getTarrif().getPrice())
+                .procents(post.getCar().getTarrif().getProcents()).build();
+        return build;
+
     }
     private final String storagePath = "src/main/resources/static/cars/";
     public Post savePost(Post post,  List<MultipartFile> files) throws NoFileExeption, PostUploadFailedException {
@@ -186,7 +208,7 @@ public class PostService {
     }
 
     public Application buyPost(Long id) {
-        Post postById = getPostById(id);
+        Post postById = findPostById(id);
         return applicationService.createApplication(postById);
     }
 }

@@ -18,6 +18,7 @@ import uz.yusa.avtokredits.domain.post.Car;
 import uz.yusa.avtokredits.domain.post.CreditTarrif;
 import uz.yusa.avtokredits.domain.post.Post;
 import uz.yusa.avtokredits.dto.AllPostsDto;
+import uz.yusa.avtokredits.dto.GetPostDto;
 import uz.yusa.avtokredits.dto.UploadPostDto;
 import uz.yusa.avtokredits.exeption.NoFileExeption;
 import uz.yusa.avtokredits.exeption.PostUploadFailedException;
@@ -37,7 +38,10 @@ public class PostController {
 
         return ResponseEntity.ok(postService.getAllActivePosts());
     }
-
+    @GetMapping("/{id}")
+    public ResponseEntity<GetPostDto> getPost(@PathVariable Long id) {
+        return ResponseEntity.ok(postService.getPostById(id));
+    }
 
     @PostMapping("/add")
     public ResponseEntity<Post> addPost(@ModelAttribute UploadPostDto dto)throws NoFileExeption {
@@ -59,10 +63,7 @@ public class PostController {
     public ResponseEntity<String> deletePost(@PathVariable Long id) {
         return ResponseEntity.ok(postService.deletePost(id));
     }
-    @GetMapping("/{id}")
-    public ResponseEntity<Post> getPost(@PathVariable Long id) {
-        return ResponseEntity.ok(postService.getPostById(id));
-    }
+
     @PostMapping("/update/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Post> updatePost(@PathVariable Long id, @RequestBody Post post) {

@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.context.RequestAttributeSecurityContextRepository;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -23,6 +24,9 @@ public class JwtFilter extends OncePerRequestFilter {
     private static final String AUTHORIZATION = "Authorization";
 
     private static final String BEARER = "Bearer ";
+
+    private RequestAttributeSecurityContextRepository repository
+            = new RequestAttributeSecurityContextRepository();
 
     private final JwtProvider jwtProvider;
     @Override
@@ -54,10 +58,11 @@ public class JwtFilter extends OncePerRequestFilter {
                         roles.stream().map(SimpleGrantedAuthority::new).toList()
                 )
         );
-
+        repository.saveContext(SecurityContextHolder.getContext(), request, response);
 
         filterChain.doFilter(request,response);
 
     }
+
 
 }

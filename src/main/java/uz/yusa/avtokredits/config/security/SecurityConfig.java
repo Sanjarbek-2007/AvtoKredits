@@ -46,7 +46,7 @@ public class SecurityConfig {
                         registr.requestMatchers("/auth/**","/posts/**"
                                         ,"/apps/**","/images/**","/files/**"
                                 ).permitAll()
-                                .requestMatchers("/posts/**").hasRole("ADMIN")
+//                                .requestMatchers("/posts/**").hasRole("ADMIN")
                                 .anyRequest().authenticated()
 
                 ).sessionManagement(config -> config.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
