@@ -2,9 +2,12 @@ package uz.yusa.avtokredits.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.util.Date;
@@ -13,6 +16,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import uz.yusa.avtokredits.domain.post.Car;
 import uz.yusa.avtokredits.domain.post.Post;
 
 @Entity
@@ -37,11 +41,9 @@ public class Application {
     @Column(name = "phone")
     private String phone;
 
-    @Column(name = "car")
-    private String car;
-
-    @Column(name = "car_Price")
-    private String carPrice;
+//    @Column(name = "car_id")
+    @ManyToOne
+    private Post car;
 
     @Column(name = "loanAmount")
     private String loanAmount;
@@ -50,6 +52,7 @@ public class Application {
     private String description;
 
     private Boolean isClosed = Boolean.FALSE;
+    private Boolean isAccepted = Boolean.FALSE;
     @OneToOne
     private Post post;
 
