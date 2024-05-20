@@ -20,4 +20,6 @@ public class CreditTarrif {
     @Nullable
     private double  procents;
     private double total;
+    private double firstlyDeposit;
+
 }
