@@ -2,14 +2,13 @@ package uz.yusa.avtokredits.service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import uz.yusa.avtokredits.domain.Application;
 import uz.yusa.avtokredits.domain.post.Post;
-import uz.yusa.avtokredits.domain.User;
 import uz.yusa.avtokredits.dto.ApplicationSaveDto;
+import uz.yusa.avtokredits.dto.GetApplicationDto;
 import uz.yusa.avtokredits.repository.ApplicationRepository;
 import uz.yusa.avtokredits.repository.PostRepository;
 import uz.yusa.avtokredits.repository.UserRepository;
@@ -22,10 +21,33 @@ public class ApplicationService {
     private final UserRepository userRepository;
 
 
-    public List<Application> getAllApplications() {
+    public List<GetApplicationDto> getAllApplications() {
+        List<Application> applications = applicationRepository.findAll();
 
+        return applications.stream().map(this::convertToGetApplicationDto).collect(Collectors.toList());
+    }
 
-        return applicationRepository.findAll();
+    public GetApplicationDto getApplicationById(Long id) {
+        System.out.println(id + " _________________________ ID OF APPPPPPPPPPPPPPPPPP");
+        Application application = applicationRepository.findById(id).orElse(null);
+        System.out.println(application.getId() + " _________________________ ID OF APPPPPPPPPPPPPPPPPP IDDDDDDDDDDDDDDDDDDDDD");
+
+        return convertToGetApplicationDto(application);
+    }
+
+    private GetApplicationDto convertToGetApplicationDto(Application application) {
+        Post post = postRepository.findById(application.getPostId())
+                .orElse(null);
+
+        return GetApplicationDto.builder()
+                .id(application.getId())
+                .fullName(application.getFullName())
+                .phone(application.getPhone())
+                .title(application.getTitle())
+                .description(application.getDescription())
+                .isClosed(application.getIsClosed()).isAccepted(application.getIsAccepted())
+                .post(post)
+                .appliedDate(application.getAppliedDate()).build();
 
     }
 
@@ -38,49 +60,25 @@ public class ApplicationService {
             applicationEntity.setPhone(application.phone());
             applicationEntity.setPostId(application.postId());
             applicationEntity.setAppliedDate(new Date());
+            applicationEntity.setTitle(application.title());
+            applicationEntity.setDescription(application.description());
             applicationEntity.setIsAccepted(false);
             applicationEntity.setIsClosed(false);
-
-            return  applicationRepository.save(applicationEntity); // Сохра
+            System.out.println(applicationEntity.getPostId()+"   POST ID HEREEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
+            return applicationRepository.save(applicationEntity); // Сохра
         } catch (Exception e) {
             throw new RuntimeException("Failed to save application", e);
         }
     }
 
 
-
-
-    public Application getApplicationById(Long id) {
-
-        return applicationRepository.findById(id).get();
-    }
-
-    public Application getApplication(Long id) {
-
-        return applicationRepository.findById(id).get();
-    }
     public void closeApplicationById(Long id) {
-        applicationRepository.updateIsClosedById(true,id);
+        applicationRepository.updateIsClosedById(true, id);
     }
-
-//    public Application createApplication(Post post) {
-//        String name = SecurityContextHolder.getContext().getAuthentication().getName();
-//        User user = userRepository.findByEmail(name).get();
-//        Application app = Application.builder()
-//                .title("Sotib olmoqchi man")
-//                .appliedDate(new Date())
-//                .description("Avtomobilni")
-//                .post(post)
-//                .build();
-//        return applicationRepository.save(app);
-//
-//    }
-
-
 
 
     public Application acceptApp(Long id) {
-        applicationRepository.updateIsAcceptedById(true,id);
+        applicationRepository.updateIsAcceptedById(true, id);
 
 
         return applicationRepository.findById(id).orElse(null);
