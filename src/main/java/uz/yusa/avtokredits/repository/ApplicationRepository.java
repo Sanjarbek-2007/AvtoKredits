@@ -21,10 +21,7 @@ public interface ApplicationRepository extends JpaRepository<Application, Long> 
     @Query("update Application a set a.isClosed = ?1 where a.id = ?2")
     int updateIsClosedById(Boolean isClosed, Long id);
 
-    Optional<Application> findByIdAndCustomer_Email(Long id, String email);
 
-
-    List<Application> findByCustomer_Email(String email);
 
 
 }

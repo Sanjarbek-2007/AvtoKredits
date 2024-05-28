@@ -17,9 +17,9 @@ import uz.yusa.avtokredits.repository.UserRepository;
 @Service
 @RequiredArgsConstructor
 public class ApplicationService {
-    public final ApplicationRepository applicationRepository;
-    public final PostRepository postRepository;
-    public final UserRepository userRepository;
+    private final ApplicationRepository applicationRepository;
+    private final PostRepository postRepository;
+    private final UserRepository userRepository;
 
 
     public List<Application> getAllApplications() {
@@ -30,18 +30,18 @@ public class ApplicationService {
     }
 
 
-    public ApplicationSaveDto saveApplication(ApplicationSaveDto application) {
+    public Application saveApplication(ApplicationSaveDto application) {
         try {
             Application applicationEntity = new Application();
             // Установка полей из формы входных данных
             applicationEntity.setFullName(application.fullName());
             applicationEntity.setPhone(application.phone());
-            applicationEntity.setCar(postRepository.findById(application.postId()).orElse(null));
+            applicationEntity.setPostId(application.postId());
             applicationEntity.setAppliedDate(new Date());
             applicationEntity.setIsAccepted(false);
             applicationEntity.setIsClosed(false);
-            applicationRepository.save(applicationEntity); // Сохранение заявки
-            return application;
+
+            return  applicationRepository.save(applicationEntity); // Сохра
         } catch (Exception e) {
             throw new RuntimeException("Failed to save application", e);
         }
@@ -57,26 +57,24 @@ public class ApplicationService {
 
     public Application getApplication(Long id) {
 
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        return applicationRepository.findByIdAndCustomer_Email(id, email).get();
+        return applicationRepository.findById(id).get();
     }
     public void closeApplicationById(Long id) {
         applicationRepository.updateIsClosedById(true,id);
     }
 
-    public Application createApplication(Post post) {
-        String name = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findByEmail(name).get();
-        Application app = Application.builder()
-                .title("Sotib olmoqchi man")
-                .appliedDate(new Date())
-                .description("Avtomobilni")
-                .customer(user)
-                .post(post)
-                .build();
-        return applicationRepository.save(app);
-
-    }
+//    public Application createApplication(Post post) {
+//        String name = SecurityContextHolder.getContext().getAuthentication().getName();
+//        User user = userRepository.findByEmail(name).get();
+//        Application app = Application.builder()
+//                .title("Sotib olmoqchi man")
+//                .appliedDate(new Date())
+//                .description("Avtomobilni")
+//                .post(post)
+//                .build();
+//        return applicationRepository.save(app);
+//
+//    }
 
 
 
