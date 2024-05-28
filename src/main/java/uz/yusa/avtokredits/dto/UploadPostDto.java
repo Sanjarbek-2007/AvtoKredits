@@ -23,7 +23,6 @@ public record UploadPostDto (
         String creditTarifs,
         int creditMonthCount,
         double amount,
-        double procents,
-        double firstlyDeposit
+        double procents
 ){
 }

@@ -11,9 +11,7 @@ import uz.yusa.avtokredits.domain.post.Post;
 public record ApplicationSaveDto(
          String fullName,
          String phone,
-         Long car,
-         String loanAmount,
          String title,
          String description,
-         Post post
+         Long   postId
 ){}

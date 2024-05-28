@@ -20,9 +20,12 @@ public class ApplicationService {
     public final ApplicationRepository applicationRepository;
     public final PostRepository postRepository;
     public final UserRepository userRepository;
+
+
     public List<Application> getAllApplications() {
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        return applicationRepository.findByCustomer_Email(email);
+
+
+        return applicationRepository.findAll();
 
     }
 
@@ -33,8 +36,7 @@ public class ApplicationService {
             // Установка полей из формы входных данных
             applicationEntity.setFullName(application.fullName());
             applicationEntity.setPhone(application.phone());
-            applicationEntity.setCar(postRepository.findById(application.car()).orElse(null));
-            applicationEntity.setLoanAmount(application.loanAmount());
+            applicationEntity.setCar(postRepository.findById(application.postId()).orElse(null));
             applicationEntity.setAppliedDate(new Date());
             applicationEntity.setIsAccepted(false);
             applicationEntity.setIsClosed(false);
@@ -50,9 +52,9 @@ public class ApplicationService {
 
     public Application getApplicationById(Long id) {
 
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        return applicationRepository.findByIdAndCustomer_Email(id, email).get();
+        return applicationRepository.findById(id).get();
     }
+
     public Application getApplication(Long id) {
 
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -78,11 +80,6 @@ public class ApplicationService {
 
 
 
-
-
-    public Application getApplication() {
-        return null;
-    }
 
     public Application acceptApp(Long id) {
         applicationRepository.updateIsAcceptedById(true,id);

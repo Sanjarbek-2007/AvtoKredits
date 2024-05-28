@@ -77,6 +77,7 @@ public class PostService {
                     .creditMonthCount(post.getCar().getTarrif().getCountMonths())
                     .amount(post.getCar().getTarrif().getPrice())
                     .procents(post.getCar().getTarrif().getProcents())
+
                     .build());
         }
         return dtos;
@@ -205,8 +206,5 @@ public class PostService {
         return  post;
     }
 
-    public Application buyPost(Long id) {
-        Post postById = findPostById(id);
-        return applicationService.createApplication(postById);
-    }
+
 }

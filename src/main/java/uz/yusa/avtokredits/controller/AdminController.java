@@ -34,10 +34,7 @@ public class AdminController {
     public ResponseEntity<List<Application>> getAllApplications(){
         return ResponseEntity.ok(applicationService.getAllApplications());
     }
-    @GetMapping("/applications/{id}")
-    public ResponseEntity<Application> getApplicationById(@PathVariable Long id){
-        return ResponseEntity.ok(applicationService.getApplicationById(id));
-    }
+
     @GetMapping("/applications/{id}/close")
     public ResponseEntity<String> closeApplicationById(@PathVariable Long id){
         applicationService.closeApplicationById(id);

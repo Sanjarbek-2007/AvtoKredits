@@ -98,6 +98,27 @@ public class PhotoController {
     }
 
 
+
+
+        private MediaType getImageMediaType (Path imagePath){
+            String fileName = imagePath.getFileName().toString();
+            String fileExtension = fileName.substring(fileName.lastIndexOf('.') + 1).toLowerCase();
+
+            switch (fileExtension) {
+                case "jpg":
+                case "jpeg":
+                    return MediaType.IMAGE_JPEG;
+                case "png":
+                    return MediaType.IMAGE_PNG;
+                case "gif":
+                    return MediaType.IMAGE_GIF;
+                default:
+                    return MediaType.APPLICATION_OCTET_STREAM;
+            }
+        }
+    }
+
+
 //    @GetMapping("/{id}/all")
 //
 //    public ResponseEntity<List<Resource>> getAllImages(@PathVariable Long id) {
@@ -135,23 +156,3 @@ public class PhotoController {
 //
 //        return ResponseEntity.ok(resources);
 //    }
-
-
-
-        private MediaType getImageMediaType (Path imagePath){
-            String fileName = imagePath.getFileName().toString();
-            String fileExtension = fileName.substring(fileName.lastIndexOf('.') + 1).toLowerCase();
-
-            switch (fileExtension) {
-                case "jpg":
-                case "jpeg":
-                    return MediaType.IMAGE_JPEG;
-                case "png":
-                    return MediaType.IMAGE_PNG;
-                case "gif":
-                    return MediaType.IMAGE_GIF;
-                default:
-                    return MediaType.APPLICATION_OCTET_STREAM;
-            }
-        }
-    }

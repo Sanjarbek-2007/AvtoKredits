@@ -48,7 +48,7 @@ public class PostController {
 
             Post post1 = Post.builder().title(dto.postTitle()).content(dto.carContent()).photos(new ArrayList<>()).car(new Car(dto.carBrand(),
                     dto.carModel(), dto.carYear(), dto.carColor(), dto.carEngine(), dto.carGear(), dto.carFuelType(),
-            new CreditTarrif(dto.creditTarifs(), dto.amount(), dto.creditMonthCount(), dto.procents(), dto.amount()/100*dto.procents(),dto.firstlyDeposit()))).build();
+            new CreditTarrif(dto.creditTarifs(), dto.amount(), dto.creditMonthCount(), dto.procents(), dto.amount()/100*dto.procents()))).build();
 
 
         try {
@@ -68,10 +68,6 @@ public class PostController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Post> updatePost(@PathVariable Long id, @RequestBody Post post) {
         return ResponseEntity.ok(postService.updatePost(post, id));
-    }
-    @PostMapping("/{id}/buy")
-    public ResponseEntity<Application> buyCar(@PathVariable Long id) {
-        return ResponseEntity.ok(postService.buyPost(id));
     }
 
 }

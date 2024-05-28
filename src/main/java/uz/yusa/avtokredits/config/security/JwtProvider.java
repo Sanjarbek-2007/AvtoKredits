@@ -20,13 +20,12 @@ public class JwtProvider {
     public String generate(User user) {
         StringJoiner roles = new StringJoiner(",");
 
-        // Check if user roles are null
         if (user.getRoles() == null) {
             throw new IllegalStateException("User roles are not set.");
         }
 
         user.getRoles().forEach(role -> roles.add(role.getName().toUpperCase()));
-
+        System.out.println(roles.toString());
         return Jwts.builder()
                 .subject(user.getEmail())
                 .issuedAt(new Date())
@@ -36,9 +35,6 @@ public class JwtProvider {
                 .compact();
     }
     public String generateVerificationToken(String email) {
-
-
-
         return Jwts.builder()
                 .subject(email)
                 .issuedAt(new Date())
