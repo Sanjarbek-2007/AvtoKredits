@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -38,6 +39,18 @@ public class ApplicationController {
     public ResponseEntity<GetApplicationDto> getApplication(@PathVariable Long id) {
 
         return ResponseEntity.ok(applicationService.getApplicationById(id));
+    }
+    @PutMapping("/{id}/close")
+    public Boolean closeApplication(@PathVariable Long id) {
+
+        applicationService.closeApplicationById(id);
+        return true;
+    }
+    @PutMapping("/{id}/accept")
+    public  Boolean acceptApplication(@PathVariable Long id) {
+
+        applicationService.acceptApp(id);
+        return true;
     }
     @GetMapping
     public ResponseEntity<List<GetApplicationDto>> getApplicationAdmins() {

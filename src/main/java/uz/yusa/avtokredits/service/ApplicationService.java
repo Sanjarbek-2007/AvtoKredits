@@ -77,11 +77,10 @@ public class ApplicationService {
     }
 
 
-    public Application acceptApp(Long id) {
+    public void acceptApp(Long id) {
         applicationRepository.updateIsAcceptedById(true, id);
 
 
-        return applicationRepository.findById(id).orElse(null);
 
     }
 }
